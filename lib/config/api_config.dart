@@ -1,9 +1,9 @@
 class ApiConfig {
   // Update with your actual backend URL
-  static const String baseUrl = 'https://your-backend-url.com';
+  //static const String baseUrl = 'https://your-backend-url.com';
 
   // Or for local development:
-  // static const String baseUrl = 'http://localhost:3000';
+  static const String baseUrl = 'http://localhost:3000';
   // For Android emulator accessing localhost:
   // static const String baseUrl = 'http://10.0.2.2:3000';
 

@@ -12,6 +12,9 @@ import 'providers/auth_provider.dart';
 import 'providers/pet_provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/cart_provider.dart';
+import 'data/repositories/order_repository.dart';
+import 'providers/order_provider.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +50,15 @@ class MyApp extends StatelessWidget {
         Provider<CartRepository>(
           create: (_) => CartRepository(apiService),
         ),
+        Provider<OrderRepository>(
+          create: (_) => OrderRepository(apiService),
+        ),
+        ChangeNotifierProvider<OrderProvider>(
+          create: (context) => OrderProvider(
+            context.read<OrderRepository>(),
+          ),
+        ),
+
 
         // Providers
         ChangeNotifierProvider<AuthProvider>(

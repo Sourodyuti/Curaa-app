@@ -11,6 +11,8 @@ import '../../widgets/loading_widget.dart';
 import 'widgets/hero_section.dart';
 import 'widgets/category_section.dart';
 import 'widgets/service_section.dart';
+import '../../widgets/custom_button.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);

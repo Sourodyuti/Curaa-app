@@ -34,7 +34,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   void _addToCart() {
     final product = context.read<ProductProvider>().selectedProduct;
-    if (product == null) return;
+    if (product == null || !product.inStock) return;
 
     context.read<CartProvider>().addToCart(product.id, _quantity);
 
@@ -50,6 +50,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -273,10 +274,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   Expanded(
                     child: CustomButton(
                       text: 'Add to Cart',
-                      onPressed: product.inStock ? _addToCart : null,
+                      onPressed: _addToCart,
                       icon: Icons.shopping_cart,
                     ),
                   ),
+
                 ],
               ),
             ),
