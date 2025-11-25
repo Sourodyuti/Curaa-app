@@ -1,32 +1,81 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/router/app_router.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'config/app_theme.dart';
+import 'config/routes.dart';
+import 'core/utils/storage_helper.dart';
+import 'data/services/api_service.dart';
+import 'data/repositories/auth_repository.dart';
+import 'data/repositories/pet_repository.dart';
+import 'data/repositories/product_repository.dart';
+import 'data/repositories/cart_repository.dart';
+import 'providers/auth_provider.dart';
+import 'providers/pet_provider.dart';
+import 'providers/product_provider.dart';
+import 'providers/cart_provider.dart';
 
-void main() {
-  runApp(const ProviderScope(child: MyApp()));
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize storage
+  await StorageHelper.init();
+
+  // Initialize API service
+  final apiService = ApiService();
+
+  runApp(MyApp(apiService: apiService));
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  final ApiService apiService;
+
+  const MyApp({Key? key, required this.apiService}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
-
-    return MaterialApp.router(
-      title: 'CURAA Pet Care',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF2E7D32), // Primary Green from your CSS
-          primary: const Color(0xFF2E7D32),
-          secondary: const Color(0xFFF9A825), // Accent Yellow
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        // Repositories
+        Provider<AuthRepository>(
+          create: (_) => AuthRepository(apiService),
         ),
-        useMaterial3: true,
-        textTheme: GoogleFonts.interTextTheme(), // Matches your Inter font
+        Provider<PetRepository>(
+          create: (_) => PetRepository(apiService),
+        ),
+        Provider<ProductRepository>(
+          create: (_) => ProductRepository(apiService),
+        ),
+        Provider<CartRepository>(
+          create: (_) => CartRepository(apiService),
+        ),
+
+        // Providers
+        ChangeNotifierProvider<AuthProvider>(
+          create: (context) => AuthProvider(
+            context.read<AuthRepository>(),
+          )..checkAuthStatus(),
+        ),
+        ChangeNotifierProvider<PetProvider>(
+          create: (context) => PetProvider(
+            context.read<PetRepository>(),
+          ),
+        ),
+        ChangeNotifierProvider<ProductProvider>(
+          create: (context) => ProductProvider(
+            context.read<ProductRepository>(),
+          )..fetchFeaturedProducts(),
+        ),
+        ChangeNotifierProvider<CartProvider>(
+          create: (context) => CartProvider(
+            context.read<CartRepository>(),
+          ),
+        ),
+      ],
+      child: MaterialApp.router(
+        title: 'CURAA',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        routerConfig: AppRouter.router,
       ),
-      routerConfig: router,
     );
   }
 }
