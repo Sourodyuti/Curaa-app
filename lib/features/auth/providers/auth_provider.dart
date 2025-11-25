@@ -29,13 +29,21 @@ class AuthState {
   }
 }
 
-// 4. Auth Controller (The Logic)
-class AuthNotifier extends StateNotifier<AuthState> {
-  final Dio _dio;
-  final FlutterSecureStorage _storage;
+// 4. Auth Controller (Updated to Notifier)
+class AuthNotifier extends Notifier<AuthState> {
+  late final Dio _dio;
+  late final FlutterSecureStorage _storage;
 
-  AuthNotifier(this._dio, this._storage) : super(AuthState()) {
+  @override
+  AuthState build() {
+    // Initialize dependencies
+    _dio = ref.read(dioClientProvider).dio;
+    _storage = ref.read(storageProvider);
+
+    // Check initial status
     checkLoginStatus();
+
+    return AuthState(); // Initial state
   }
 
   Future<void> checkLoginStatus() async {
@@ -56,15 +64,18 @@ class AuthNotifier extends StateNotifier<AuthState> {
       final token = response.data['token'];
       await _storage.write(key: 'token', value: token);
 
-      // Store user data if needed
-      // await _storage.write(key: 'user', value: jsonEncode(response.data['user']));
-
       state = state.copyWith(isAuthenticated: true, isLoading: false);
       return true;
     } on DioException catch (e) {
       state = state.copyWith(
         isLoading: false,
         error: e.response?.data['message'] ?? 'Login failed',
+      );
+      return false;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
       );
       return false;
     }
@@ -76,9 +87,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 }
 
-// 5. The Provider to use in UI
-final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-  final dio = ref.watch(dioClientProvider).dio;
-  final storage = ref.watch(storageProvider);
-  return AuthNotifier(dio, storage);
+// 5. The Provider
+final authProvider = NotifierProvider<AuthNotifier, AuthState>(() {
+  return AuthNotifier();
 });

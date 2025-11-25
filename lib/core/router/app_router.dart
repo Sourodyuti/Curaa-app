@@ -3,29 +3,29 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/auth/providers/auth_provider.dart';
 import '../../features/auth/screens/login_screen.dart';
-import '../../features/home/screens/home_screen.dart'; // We will create this later
+import '../../features/home/screens/home_screen.dart';
+// Import the products screen (we will create this file in the next step)
+import '../../features/products/screens/product_catalog_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authProvider);
 
   return GoRouter(
     initialLocation: '/',
-    refreshListenable: ValueNotifier(authState), // Listens to auth changes
+    refreshListenable: ValueNotifier(authState),
     redirect: (context, state) {
       final isLoggedIn = authState.isAuthenticated;
       final isGoingToLogin = state.matchedLocation == '/login';
 
-      // If not logged in and trying to access a protected route, go to login
       if (!isLoggedIn && !isGoingToLogin) {
         return '/login';
       }
 
-      // If logged in and trying to go to login, go to home
       if (isLoggedIn && isGoingToLogin) {
         return '/';
       }
 
-      return null; // No redirect needed
+      return null;
     },
     routes: [
       GoRoute(
@@ -36,7 +36,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/login',
         builder: (context, state) => const LoginScreen(),
       ),
-      // Add Product/Cart routes here later
+      GoRoute(
+        path: '/products',
+        builder: (context, state) => const ProductCatalogScreen(),
+      ),
     ],
   );
 });
