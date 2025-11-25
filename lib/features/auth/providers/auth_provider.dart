@@ -55,7 +55,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
 
       final token = response.data['token'];
       await _storage.write(key: 'token', value: token);
-      
+
       // Store user data if needed
       // await _storage.write(key: 'user', value: jsonEncode(response.data['user']));
 
