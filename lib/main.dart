@@ -8,23 +8,22 @@ import 'data/repositories/auth_repository.dart';
 import 'data/repositories/pet_repository.dart';
 import 'data/repositories/product_repository.dart';
 import 'data/repositories/cart_repository.dart';
+import 'data/repositories/order_repository.dart';
 import 'providers/auth_provider.dart';
 import 'providers/pet_provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/cart_provider.dart';
-import 'data/repositories/order_repository.dart';
 import 'providers/order_provider.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  
   // Initialize storage
   await StorageHelper.init();
-
+  
   // Initialize API service
   final apiService = ApiService();
-
+  
   runApp(MyApp(apiService: apiService));
 }
 
@@ -53,13 +52,7 @@ class MyApp extends StatelessWidget {
         Provider<OrderRepository>(
           create: (_) => OrderRepository(apiService),
         ),
-        ChangeNotifierProvider<OrderProvider>(
-          create: (context) => OrderProvider(
-            context.read<OrderRepository>(),
-          ),
-        ),
-
-
+        
         // Providers
         ChangeNotifierProvider<AuthProvider>(
           create: (context) => AuthProvider(
@@ -81,11 +74,16 @@ class MyApp extends StatelessWidget {
             context.read<CartRepository>(),
           ),
         ),
+        ChangeNotifierProvider<OrderProvider>(
+          create: (context) => OrderProvider(
+            context.read<OrderRepository>(),
+          ),
+        ),
       ],
       child: MaterialApp.router(
         title: 'CURAA',
         debugShowCheckedModeBanner: false,
-        theme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme,
         routerConfig: AppRouter.router,
       ),
     );
