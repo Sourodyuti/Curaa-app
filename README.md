@@ -24,7 +24,7 @@ We are engineering a platform where "Pawsome Care" meets "Pixel-Perfect Performa
 
 The application is being constructed on a **Service-Oriented Architecture (SOA)**, designed to handle the complexity of scheduling, payments, and real-time tracking without compromising user experience.
 
-### 1\. The Omni-Service Engine 🩺
+### 1\. The Omni-Service Engine 
 
 We are developing a dynamic routing module that handles diverse service verticals within a single codebase:
 
